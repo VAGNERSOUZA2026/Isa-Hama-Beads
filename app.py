@@ -75,7 +75,7 @@ if 'carrinho' not in st.session_state:
     st.session_state.carrinho = []
 
 # Cabeçalho com Logo e Carrinho Flutuante
-col_logo, col_vazio, col_cart = st.colunas([1, 2, 1])
+col_logo, col_vazio, col_cart = st.columns([1, 2, 1])
 with col_logo:
     if os.path.exists("logo.png"):
         st.image("logo.png", width=80)
@@ -89,7 +89,7 @@ with col_cart:
 
 st.markdown("---")
 
-# SEÇÃO: Criar seu chaveiro personalizado (Igual à referência)
+# SEÇÃO: Criar seu chaveiro personalizado
 st.markdown("""
 <div class="card">
     <span style="background-color: #fae8ff; color: #a21caf; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">Feito especialmente para você</span>
@@ -198,7 +198,6 @@ for index, prod in enumerate(produtos_filtrados):
         
         # Botão de adicionar ao carrinho
         if st.button("➕ Adicionar", key=f"add_{prod['id']}"):
-            # Verifica se já está no carrinho
             encontrado = False
             for item in st.session_state.carrinho:
                 if item['id'] == prod['id']:
