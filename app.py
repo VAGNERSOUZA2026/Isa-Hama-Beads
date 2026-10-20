@@ -77,7 +77,10 @@ if 'carrinho' not in st.session_state:
 # Cabeçalho com Logo e Carrinho Flutuante
 col_logo, col_vazio, col_cart = st.columns([1, 2, 1])
 with col_logo:
-    if os.path.exists("logo.png"):
+    # Verificando o nome exato do arquivo que está no GitHub
+    if os.path.exists("logo.png.jpeg"):
+        st.image("logo.png.jpeg", width=80)
+    elif os.path.exists("logo.png"):
         st.image("logo.png", width=80)
     else:
         st.markdown("🎨 **Isa Hama Beads**")
