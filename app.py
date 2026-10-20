@@ -98,33 +98,24 @@ if "carrinho" not in st.session_state:
 if "ver_carrinho" not in st.session_state:
     st.session_state.ver_carrinho = False
 
-# Cabeçalho com logo ampliada
-top1, top2 = st.columns([1, 4], vertical_alignment="center")
-with top1:
-    if os.path.exists(LOGO_FILE):
-        st.image(LOGO_FILE, width=220)
-    else:
-        st.markdown("<div style='font-size:3.6rem;text-align:center'>🌸🧵</div>", unsafe_allow_html=True)
-with top2:
-    st.markdown("<div class='pill'>✦ FEITO À MÃO, COM CRIATIVIDADE</div><h1 style='margin:.25rem 0'>Isa Hama Beads</h1><div class='small-muted'>Chaveiros artesanais coloridos, personalizados e cheios de personalidade.</div>", unsafe_allow_html=True)
-st.markdown("<div class='animated-strip'></div>", unsafe_allow_html=True)
-
-# Hero / logo animada em estilo de apresentação
-hero_left, hero_right = st.columns([1.6, 1], vertical_alignment="center")
+# Cabeçalho único: uma só logo, inteira e sem duplicação
+hero_left, hero_right = st.columns([1.5, 1], vertical_alignment="center")
 with hero_left:
     st.markdown("""
     <section class="hero">
+      <span class="pill">✦ FEITO À MÃO, COM CRIATIVIDADE</span>
+      <div class="hero-title">Isa Hama Beads</div>
+      <p class="hero-sub">Chaveiros artesanais coloridos, personalizados e cheios de personalidade.</p>
+      <div style="height:1px;background:#f0cce2;margin:18px 0"></div>
       <span class="pill">🌈 Seu estilo em pequenas peças</span>
-      <div class="hero-title">Pequenos detalhes.<br>Grandes ideias.</div>
+      <div style="font-family:'Playfair Display',serif;color:#4b285f;font-size:clamp(1.8rem,3vw,2.7rem);line-height:1.12;margin:.7rem 0">Pequenos detalhes.<br>Grandes ideias.</div>
       <p class="hero-sub">Escolha seu chaveiro favorito ou peça uma criação exclusiva feita com Hama Beads.</p>
       <p style="color:#7545a8;font-weight:700">💗 Presentes criativos • Personagens • Modelos personalizados</p>
     </section>
     """, unsafe_allow_html=True)
 with hero_right:
     if os.path.exists(LOGO_FILE):
-        st.markdown("<div class='floating-logo'>", unsafe_allow_html=True)
-        st.image(LOGO_FILE, width=300)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.image(LOGO_FILE, width=340)
     else:
         st.markdown("<div class='hero' style='text-align:center;font-size:5rem'>🧸🌸✨<p style='font-size:1rem'>Criatividade em cada miçanga</p></div>", unsafe_allow_html=True)
 
