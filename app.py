@@ -28,7 +28,14 @@ p,div,label{font-family:'DM Sans',sans-serif}
 div[data-testid="stVerticalBlockBorderWrapper"]{border:1px solid var(--line);border-radius:22px;background:white;box-shadow:0 8px 24px #512b570a}
 div[data-testid="stForm"]{border:1px solid var(--line);border-radius:20px;padding:18px;background:white}
 div[data-testid="stExpander"]{border:1px solid var(--line);border-radius:18px;background:#fffafd}
-div[data-testid="stImage"] img{border-radius:18px;object-fit:contain;max-height:280px}\n.product-photo img{max-height:220px;object-fit:contain}\n[data-testid="stButton"] button{white-space:normal}\n.nav-cart button{font-size:.9rem;padding:.55rem .5rem}
+div[data-testid="stImage"] img{border-radius:18px;object-fit:contain;max-height:280px}
+.product-photo img{max-height:220px;object-fit:contain}
+[data-testid="stButton"] button{white-space:normal}
+.nav-cart button{font-size:.9rem;padding:.55rem .5rem}
+.brand-logo img{width:100%;max-width:124px;max-height:124px;object-fit:contain;object-position:center;display:block}
+.brand-logo{display:flex;align-items:center;justify-content:center;overflow:visible;min-height:124px}
+.block-container{padding-top:1.6rem!important}
+[data-testid="stHeader"]{height:3.2rem}
 .brandbar{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:12px 18px;margin-bottom:14px;box-shadow:0 8px 25px #5a23420b}
 .brandname{font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;color:#52275e;line-height:1.1}
 .brandtag{font-size:.82rem;color:var(--muted);margin-top:3px}
@@ -145,14 +152,18 @@ for key, value in {
         st.session_state[key] = value
 
 # Header
-h1, h2 = st.columns([1, 5], vertical_alignment="center")
+h1, h2, h3 = st.columns([1.25, 4.5, 2.1], vertical_alignment="center")
 with h1:
+    st.markdown("<div class='brand-logo'>", unsafe_allow_html=True)
     if os.path.exists(LOGO_FILE):
-        st.image(LOGO_FILE, width=86)
+        st.image(LOGO_FILE, width=124)
     else:
         st.markdown("## 🌸")
+    st.markdown("</div>", unsafe_allow_html=True)
 with h2:
     st.markdown("<div class='brandname'>Isa Hama Beads</div><div class='brandtag'>Chaveiros artesanais feitos com muito carinho 💗</div>", unsafe_allow_html=True)
+with h3:
+    st.link_button("💬 Conversar com o vendedor", "https://wa.me/" + PHONE_WA + "?text=" + urllib.parse.quote("Olá! Vim pelo site da Isa Hama Beads e gostaria de tirar uma dúvida."), use_container_width=True)
 
 # Navigation inspired by the reference
 nav_items = ["⌂  Início", "▦  Categorias", "♡  Favoritos", f"🛒  Sacolinha ({sum(i['qtd'] for i in st.session_state.carrinho)})"]
