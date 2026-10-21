@@ -114,6 +114,48 @@ def mostrar_imagem(valor, width=None):
     except Exception:
         return False
 
+
+def mostrar_foto_demo(prod, altura=230):
+    """Ilustração original demonstrativa de chaveiro feito com miçangas pixeladas."""
+    nome = str(prod.get("nome", "")).lower()
+    categoria = str(prod.get("categoria", "")).lower()
+    if "gato" in nome or "animal" in categoria or "patinha" in nome or "abelh" in nome:
+        mask, cor, acento = ["..###....",".#####...","#######..","########.","########.","########.","########.","..####...","...##...."], "#f7b6d2", "#5a3550"
+    elif "flor" in nome or "girassol" in nome or "borboleta" in nome or "natureza" in categoria:
+        mask, cor, acento = ["...#.....","..###....",".#####...","#########",".#######.","..#####..","...###...","....#....","....#...."], "#ffd447", "#ef6cae"
+    elif "cora" in nome or "frase" in categoria or "lua" in nome or "estrela" in nome:
+        mask, cor, acento = ["..###.###."," .########.".replace(" ",""),"###########","###########",".#########.","..#######..","...#####...","....###....",".....#....."], "#ff6eab", "#a744ba"
+    elif "marcador" in nome:
+        mask, cor, acento = ["...#####...","...#####...","...#####...","...#####...","...#####...","...#####...","...#####...","...#####...","....###...."], "#dba7ff", "#f46caa"
+    elif "cogumelo" in nome:
+        mask, cor, acento = ["...#####..."," .#########.".replace(" ",""),"###########","###########","...#####...","...#####...","...#####...","...#####...","...#####..."], "#f45d75", "#fff2cf"
+    elif "morango" in nome or "melancia" in nome or "fruta" in categoria:
+        mask, cor, acento = ["...#####...","..#######..",".#########.","###########","###########",".#########.","..#######..","...#####...","....###...."], "#fa647d", "#6eae75"
+    elif "alien" in nome or "game" in categoria or "controle" in nome:
+        mask, cor, acento = ["..#######..",".#########.","###########","##.#####.##","###########","###########",".#########.","..#######..","...#####..."], "#8fdbb3", "#6c5bc7"
+    elif "nuvem" in nome:
+        mask, cor, acento = ["....###....","..#######..",".#########.","###########","###########","###########","..#######..","...........","..........."], "#b7e6ff", "#6b77c9"
+    elif "arco" in nome:
+        mask, cor, acento = ["...#####...","..#######..",".#########.","##.......##","##.......##","##.......##","##.......##","##.......##","##.......##"], "#ff91bd", "#8d72df"
+    else:
+        mask, cor, acento = ["...#####...","..#######..",".#########.","###########","###########","###########",".#########.","..#######..","...#####..."], "#f7a9d2", "#9b6bd2"
+    mask = [line.ljust(11, ".")[:11] for line in mask]
+    circles = []
+    for row, line in enumerate(mask):
+        for col, cell in enumerate(line):
+            if cell == "#":
+                fill = cor if (row + col) % 4 else acento
+                x, y = 150 + (col - 5) * 13, 106 + row * 13
+                circles.append(f'<circle cx="{x}" cy="{y}" r="5.4" fill="{fill}" stroke="#ffffff" stroke-width="1.2"/>')
+    svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0f8"/><stop offset="1" stop-color="#f0e4ff"/></linearGradient><filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#6b356b" flood-opacity=".16"/></filter></defs>
+    <rect width="300" height="300" rx="24" fill="url(#bg)"/><ellipse cx="150" cy="245" rx="63" ry="10" fill="#c7a6c7" opacity=".25"/>
+    <g filter="url(#shadow)"><circle cx="150" cy="53" r="18" fill="none" stroke="#c0a1ad" stroke-width="7"/><path d="M150 70 L150 79" stroke="#c0a1ad" stroke-width="6" stroke-linecap="round"/>{''.join(circles)}</g>
+    <text x="150" y="270" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#7a527c">MODELO ILUSTRATIVO</text></svg>"""
+    encoded = base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    st.markdown(f"<div style='background:white;border:1px solid #f4d3e6;border-radius:18px;padding:7px;text-align:center'><img alt='Ilustração demonstrativa de chaveiro Hama Beads' src='data:image/svg+xml;base64,{encoded}' style='display:block;width:100%;max-height:{altura}px;object-fit:contain;border-radius:14px'/></div>", unsafe_allow_html=True)
+    return True
+
 def navegar(pagina):
     st.session_state.pagina = pagina
 
@@ -241,7 +283,7 @@ if pagina == "Início":
         for idx, prod in enumerate(destaques):
             with cols[idx]:
                 if not mostrar_imagem(prod.get("imagem", ""), width=210):
-                    st.markdown("<div style='background:linear-gradient(145deg,#ffe4f2,#f1e4ff);border-radius:18px;padding:28px 8px;text-align:center;font-size:3rem'>🧸💗</div>", unsafe_allow_html=True)
+                    mostrar_foto_demo(prod, altura=205)
                 st.markdown(f"<div class='product-title'>{escape(str(prod['nome']))}</div><div class='price'>R$ {float(prod.get('preco',0)):.2f}</div>", unsafe_allow_html=True)
                 if st.button("Ver detalhes", key=f"home_detail_{prod['id']}", use_container_width=True):
                     st.session_state.produto_selecionado = prod["id"]
@@ -276,8 +318,7 @@ elif pagina == "Categorias":
             with cols[idx % 3]:
                 with st.container(border=True):
                     if not mostrar_imagem(prod.get("imagem", "")):
-                        emoji = escape(str(prod.get("emoji", "🌸")))
-                        st.markdown(f"<div style='background:linear-gradient(145deg,#ffe4f2,#f1e4ff);border-radius:18px;padding:24px 8px;text-align:center;font-size:3.2rem;min-height:120px;display:flex;align-items:center;justify-content:center'>{emoji}</div>", unsafe_allow_html=True)
+                        mostrar_foto_demo(prod, altura=225)
                     st.markdown(f"<div class='tag'>{escape(str(prod.get('categoria','Chaveiros')))}</div><div class='product-title'>{escape(str(prod['nome']))}</div><div class='muted'>Tamanho aproximado: {escape(str(prod.get('tamanho','5 cm')))}</div><div class='price'>R$ {float(prod.get('preco',0)):.2f}</div>", unsafe_allow_html=True)
                     if int(prod.get("estoque", 0)) > 0:
                         c1, c2 = st.columns(2)
@@ -334,7 +375,7 @@ elif pagina == "Detalhes":
         pic, info = st.columns([1.15, 1], vertical_alignment="top")
         with pic:
             if not mostrar_imagem(prod.get("imagem", "")):
-                st.markdown("<div style='background:linear-gradient(145deg,#ffe4f2,#f1e4ff);border-radius:24px;padding:90px 10px;text-align:center;font-size:5rem'>🧸💗</div>", unsafe_allow_html=True)
+                mostrar_foto_demo(prod, altura=360)
         with info:
             st.markdown(f"<div class='tag'>{escape(str(prod.get('categoria','Chaveiros')))}</div>", unsafe_allow_html=True)
             st.title(str(prod["nome"]))
@@ -367,7 +408,7 @@ elif pagina == "Favoritos":
             with cols[idx % 3]:
                 with st.container(border=True):
                     if not mostrar_imagem(prod.get("imagem", "")):
-                        st.markdown("<div style='background:linear-gradient(145deg,#ffe4f2,#f1e4ff);border-radius:18px;padding:28px;text-align:center;font-size:3rem'>🌸💗</div>", unsafe_allow_html=True)
+                        mostrar_foto_demo(prod, altura=225)
                     st.markdown(f"<div class='product-title'>{escape(str(prod['nome']))}</div><div class='price'>R$ {float(prod.get('preco',0)):.2f}</div>", unsafe_allow_html=True)
                     if st.button("Remover dos favoritos", key=f"unfav_{prod['id']}", use_container_width=True):
                         st.session_state.favoritos.remove(prod["id"])
@@ -404,7 +445,8 @@ elif pagina == "Sacolinha":
                 pcol, ncol, qcol, dcol = st.columns([1, 2.3, 1.2, .8], vertical_alignment="center")
                 with pcol:
                     if not mostrar_imagem(item.get("imagem", "")):
-                        st.markdown("🌸")
+                        produto_carrinho = next((p for p in produtos if p.get("id") == item.get("id")), {"nome": item.get("nome", "Chaveiro")})
+                        mostrar_foto_demo(produto_carrinho, altura=100)
                 with ncol:
                     st.markdown(f"**{escape(str(item['nome']))}**")
                     st.markdown(f"<span class='muted'>R$ {float(item['preco']):.2f} cada</span>", unsafe_allow_html=True)
