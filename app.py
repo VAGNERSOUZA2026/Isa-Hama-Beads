@@ -28,7 +28,7 @@ p,div,label{font-family:'DM Sans',sans-serif}
 div[data-testid="stVerticalBlockBorderWrapper"]{border:1px solid var(--line);border-radius:22px;background:white;box-shadow:0 8px 24px #512b570a}
 div[data-testid="stForm"]{border:1px solid var(--line);border-radius:20px;padding:18px;background:white}
 div[data-testid="stExpander"]{border:1px solid var(--line);border-radius:18px;background:#fffafd}
-div[data-testid="stImage"] img{border-radius:18px}
+div[data-testid="stImage"] img{border-radius:18px;object-fit:contain;max-height:280px}\n.product-photo img{max-height:220px;object-fit:contain}\n[data-testid="stButton"] button{white-space:normal}\n.nav-cart button{font-size:.9rem;padding:.55rem .5rem}
 .brandbar{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:12px 18px;margin-bottom:14px;box-shadow:0 8px 25px #5a23420b}
 .brandname{font-family:'Nunito',sans-serif;font-size:1.4rem;font-weight:900;color:#52275e;line-height:1.1}
 .brandtag{font-size:.82rem;color:var(--muted);margin-top:3px}
@@ -81,7 +81,10 @@ def mostrar_imagem(valor, width=None):
     if not valor:
         return False
     try:
-        st.image(valor, width=width, use_container_width=(width is None))
+        if width is not None:
+            st.image(valor, width=width)
+        else:
+            st.image(valor, use_container_width=True)
         return True
     except Exception:
         return False
@@ -152,13 +155,12 @@ with h2:
     st.markdown("<div class='brandname'>Isa Hama Beads</div><div class='brandtag'>Chaveiros artesanais feitos com muito carinho 💗</div>", unsafe_allow_html=True)
 
 # Navigation inspired by the reference
-nav_items = ["Início", "Categorias", "Favoritos", f"Sacolinha ({sum(i['qtd'] for i in st.session_state.carrinho)})"]
+nav_items = ["⌂  Início", "▦  Categorias", "♡  Favoritos", f"🛒  Sacolinha ({sum(i['qtd'] for i in st.session_state.carrinho)})"]
 nav_cols = st.columns(4)
 for idx, label in enumerate(nav_items):
-    page = label.split(" (")[0]
+    page = ["Início", "Categorias", "Favoritos", "Sacolinha"][idx]
     with nav_cols[idx]:
-        if st.button(("♡  " if page == "Favoritos" else "🛍  " if page == "Sacolinha" else "⌂  " if page == "Início" else "▦  ") + page,
-                     key=f"nav_{idx}", use_container_width=True,
+        if st.button(label, key=f"nav_{idx}", use_container_width=True,
                      type="primary" if st.session_state.pagina == page else "secondary"):
             navegar(page)
             st.rerun()
@@ -207,7 +209,7 @@ if pagina == "Início":
         cols = st.columns(min(4, len(destaques)))
         for idx, prod in enumerate(destaques):
             with cols[idx]:
-                if not mostrar_imagem(prod.get("imagem", "")):
+                if not mostrar_imagem(prod.get("imagem", ""), width=210):
                     st.markdown("<div style='background:linear-gradient(145deg,#ffe4f2,#f1e4ff);border-radius:18px;padding:28px 8px;text-align:center;font-size:3rem'>🧸💗</div>", unsafe_allow_html=True)
                 st.markdown(f"<div class='product-title'>{escape(str(prod['nome']))}</div><div class='price'>R$ {float(prod.get('preco',0)):.2f}</div>", unsafe_allow_html=True)
                 if st.button("Ver detalhes", key=f"home_detail_{prod['id']}", use_container_width=True):
