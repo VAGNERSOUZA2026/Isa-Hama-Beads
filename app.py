@@ -149,6 +149,49 @@ with st.expander("✨ Personalizar meu chaveiro", expanded=False):
 st.markdown("---")
 
 # Sacolinha / pedido sem login, e-mail ou checkout Mercado Pago
+def finalizar_pedido():
+    carrinho = st.session_state.get("carrinho", [])
+    if not carrinho:
+        st.session_state["pedido_erro"] = "A sacolinha está vazia."
+        return
+    nome = str(st.session_state.get("checkout_nome", "")).strip()
+    telefone = str(st.session_state.get("checkout_telefone", "")).strip()
+    entrega = st.session_state.get("checkout_entrega", "Retirar em mãos")
+    endereco = str(st.session_state.get("checkout_endereco", "")).strip()
+    observacoes = str(st.session_state.get("checkout_observacoes", "")).strip()
+    if not nome or not telefone:
+        st.session_state["pedido_erro"] = "Preencha seu nome e telefone para preparar o pedido."
+        return
+    if entrega == "Receber por envio" and not endereco:
+        st.session_state["pedido_erro"] = "Informe o CEP/cidade ou endereço para combinar o envio."
+        return
+
+    total = sum(float(item["preco"]) * int(item["qtd"]) for item in carrinho)
+    mensagem = "Olá! Quero fazer este pedido na Isa Hama Beads:\\n"
+    for item in carrinho:
+        mensagem += f"- {item['qtd']}x {item['nome']} ({item['tamanho']}) — R$ {float(item['preco'])*int(item['qtd']):.2f}\\n"
+    mensagem += f"Total dos produtos: R$ {total:.2f}\\n"
+    mensagem += f"Cliente: {nome}\\nTelefone: {telefone}\\nEntrega: {entrega}\\n"
+    if endereco:
+        mensagem += f"Endereço/CEP: {endereco}\\n"
+    if observacoes:
+        mensagem += f"Observações: {observacoes}\\n"
+
+    st.session_state["pedido_whatsapp_url"] = f"https://wa.me/{PHONE_WA}?text={urllib.parse.quote(mensagem)}"
+    st.session_state["pedido_concluido"] = True
+    st.session_state["pedido_erro"] = ""
+    st.session_state["carrinho"] = []
+    st.session_state["ver_carrinho"] = True
+    # Limpa os campos do formulário antes do próximo desenho da página.
+    for chave, valor in {
+        "checkout_nome": "",
+        "checkout_telefone": "",
+        "checkout_entrega": "Retirar em mãos",
+        "checkout_endereco": "",
+        "checkout_observacoes": ""
+    }.items():
+        st.session_state[chave] = valor
+
 st.markdown("## 🛍️ Sua sacolinha")
 st.session_state.ver_carrinho = st.toggle("Mostrar carrinho", value=st.session_state.ver_carrinho)
 if st.session_state.ver_carrinho:
@@ -171,35 +214,26 @@ if st.session_state.ver_carrinho:
         st.markdown(f"### Total dos produtos: R$ {total_pedido:.2f}")
         st.markdown("### 📦 Dados do pedido")
         with st.form("form_finalizar_pedido"):
-            nome_cliente = st.text_input("Nome do cliente", placeholder="Seu nome")
-            telefone_cliente = st.text_input("Telefone/WhatsApp", placeholder="DDD + número")
-            entrega = st.radio("Como deseja receber?", ["Retirar em mãos", "Receber por envio"], horizontal=True)
-            endereco = ""
-            if entrega == "Receber por envio":
-                endereco = st.text_input("CEP, cidade e endereço para combinar o envio")
-            observacoes_pedido = st.text_area("Observações (opcional)", placeholder="Detalhes do pedido")
-            enviar_pedido = st.form_submit_button("📲 Preparar pedido no WhatsApp", use_container_width=True)
+            st.text_input("Nome do cliente", placeholder="Seu nome", key="checkout_nome")
+            st.text_input("Telefone/WhatsApp", placeholder="DDD + número", key="checkout_telefone")
+            st.radio("Como deseja receber?", ["Retirar em mãos", "Receber por envio"], horizontal=True, key="checkout_entrega")
+            if st.session_state.get("checkout_entrega", "Retirar em mãos") == "Receber por envio":
+                st.text_input("CEP, cidade e endereço para combinar o envio", key="checkout_endereco")
+            st.text_area("Observações (opcional)", placeholder="Detalhes do pedido", key="checkout_observacoes")
+            st.form_submit_button("📲 Finalizar pedido e limpar sacolinha", on_click=finalizar_pedido, use_container_width=True)
 
-        if enviar_pedido:
-            if not nome_cliente.strip() or not telefone_cliente.strip():
-                st.error("Preencha seu nome e telefone para preparar o pedido.")
-            elif entrega == "Receber por envio" and not endereco.strip():
-                st.error("Informe o CEP/cidade ou endereço para combinar o envio.")
-            else:
-                mensagem = "Olá! Quero fazer este pedido na Isa Hama Beads:\n"
-                for item in st.session_state.carrinho:
-                    mensagem += f"- {item['qtd']}x {item['nome']} ({item['tamanho']}) — R$ {float(item['preco'])*int(item['qtd']):.2f}\n"
-                mensagem += f"Total dos produtos: R$ {total_pedido:.2f}\n"
-                mensagem += f"Cliente: {nome_cliente.strip()}\nTelefone: {telefone_cliente.strip()}\nEntrega: {entrega}\n"
-                if endereco:
-                    mensagem += f"Endereço/CEP: {endereco.strip()}\n"
-                if observacoes_pedido.strip():
-                    mensagem += f"Observações: {observacoes_pedido.strip()}\n"
-                st.session_state.mensagem_pedido_whatsapp = mensagem
-                st.success("Pedido preenchido. Confira os dados e envie pelo WhatsApp.")
-                st.link_button("Enviar pedido pelo WhatsApp", f"https://wa.me/{PHONE_WA}?text={urllib.parse.quote(mensagem)}", use_container_width=True)
+        if st.session_state.get("pedido_erro"):
+            st.error(st.session_state["pedido_erro"])
 
-        st.info("Após enviar o pedido pelo WhatsApp, a loja combinará a forma de pagamento diretamente com você.")
+if st.session_state.get("pedido_concluido") and st.session_state.get("pedido_whatsapp_url"):
+    st.success("Pedido preparado! A sacolinha foi esvaziada e o formulário foi limpo.")
+    st.link_button("Abrir WhatsApp e enviar o pedido", st.session_state["pedido_whatsapp_url"], use_container_width=True)
+    if st.button("Concluir e fechar aviso do pedido", key="fechar_aviso_pedido"):
+        st.session_state["pedido_concluido"] = False
+        st.session_state["pedido_whatsapp_url"] = ""
+        st.rerun()
+
+st.info("Após enviar o pedido pelo WhatsApp, a loja combinará a forma de pagamento diretamente com você.")
 
 st.markdown("---")
 st.markdown("## 🎨 Catálogo de chaveiros")
