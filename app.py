@@ -320,10 +320,21 @@ elif pagina == "Favoritos":
 elif pagina == "Sacolinha":
     st.title("Minha sacolinha 🛍️")
     if not st.session_state.carrinho:
-        st.markdown("<div class='empty'>Sua sacolinha está vazia.<br>Escolha um chaveiro para começar! 🌸</div>", unsafe_allow_html=True)
-        if st.button("Continuar comprando", use_container_width=True):
-            navegar("Categorias")
-            st.rerun()
+        if st.session_state.pedido_pronto and st.session_state.url_pedido:
+            st.success("Pedido preparado! A sacolinha está vazia e os campos foram limpos.")
+            st.markdown("### Próximo passo: abrir o WhatsApp")
+            st.write("Clique no botão abaixo. O WhatsApp abrirá com os itens e os dados do pedido preenchidos. Para concluir, toque em **Enviar** dentro do WhatsApp.")
+            st.link_button("📲 ABRIR WHATSAPP E ENVIAR PEDIDO", st.session_state.url_pedido, use_container_width=True)
+            st.info("O pedido ainda não foi enviado à loja. Ele só será enviado quando você tocar em Enviar no WhatsApp.")
+            if st.button("Concluir e fechar aviso", use_container_width=True):
+                st.session_state.pedido_pronto = False
+                st.session_state.url_pedido = ""
+                st.rerun()
+        else:
+            st.markdown("<div class='empty'>Sua sacolinha está vazia.<br>Escolha um chaveiro para começar! 🌸</div>", unsafe_allow_html=True)
+            if st.button("Continuar comprando", use_container_width=True):
+                navegar("Categorias")
+                st.rerun()
     else:
         total = 0.0
         for idx, item in enumerate(st.session_state.carrinho):
@@ -364,14 +375,7 @@ elif pagina == "Sacolinha":
             st.form_submit_button("📲 Preparar pedido no WhatsApp", on_click=preparar_pedido, use_container_width=True)
         if st.session_state.erro_pedido:
             st.error(st.session_state.erro_pedido)
-        if st.session_state.pedido_pronto and st.session_state.url_pedido:
-            st.success("Pedido preparado. A sacolinha foi esvaziada e os campos foram limpos.")
-            st.link_button("Abrir WhatsApp e enviar pedido", st.session_state.url_pedido, use_container_width=True)
-            if st.button("Concluir e fechar aviso"):
-                st.session_state.pedido_pronto = False
-                st.session_state.url_pedido = ""
-                st.rerun()
-        st.caption("O pedido só é enviado quando você abrir o WhatsApp e tocar em enviar. O pagamento será combinado diretamente com a loja.")
+        st.caption("Ao preparar o pedido, o site abre a etapa de confirmação. Para enviar de verdade, você precisa abrir o WhatsApp e tocar em Enviar.")
 
 elif pagina == "Personalizar":
     st.title("Crie seu chaveiro personalizado ✨")
