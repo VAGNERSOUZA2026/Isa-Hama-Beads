@@ -66,9 +66,27 @@ def carregar_produtos():
                     return data
         except (json.JSONDecodeError, OSError):
             pass
+    # Catálogo demonstrativo: nomes, preços e estoque são exemplos para teste.
+    # Substitua pelas fotos, preços e disponibilidade reais antes de vender.
     data = [
-        {"id": 1, "nome": "Chaveiro colorido", "categoria": "Chaveiros", "preco": 8.0, "tamanho": "5 cm", "estoque": 10, "imagem": "", "descricao": "Chaveiro artesanal feito com Hama Beads."},
-        {"id": 2, "nome": "Personagem personalizado", "categoria": "Personagens", "preco": 8.0, "tamanho": "5 cm", "estoque": 5, "imagem": "", "descricao": "Peça artesanal colorida. Consulte modelos disponíveis."}
+        {"id": 1, "nome": "Coração rosa pixel", "categoria": "Corações e frases", "preco": 12.0, "tamanho": "5 cm", "estoque": 8, "imagem": "", "emoji": "💗", "descricao": "Modelo demonstrativo em tons de rosa."},
+        {"id": 2, "nome": "Gatinho kawaii", "categoria": "Animais fofos", "preco": 15.0, "tamanho": "5 cm", "estoque": 6, "imagem": "", "emoji": "🐱", "descricao": "Modelo demonstrativo de gatinho em pixel art."},
+        {"id": 3, "nome": "Girassol alegre", "categoria": "Flores e natureza", "preco": 14.0, "tamanho": "5 cm", "estoque": 7, "imagem": "", "emoji": "🌻", "descricao": "Modelo demonstrativo floral."},
+        {"id": 4, "nome": "Cogumelo colorido", "categoria": "Games e pixel art", "preco": 13.0, "tamanho": "5 cm", "estoque": 5, "imagem": "", "emoji": "🍄", "descricao": "Modelo demonstrativo em estilo retrô pixel art."},
+        {"id": 5, "nome": "Morango kawaii", "categoria": "Frutas e comidas", "preco": 12.0, "tamanho": "4 cm", "estoque": 8, "imagem": "", "emoji": "🍓", "descricao": "Modelo demonstrativo de fruta."},
+        {"id": 6, "nome": "Patinha de gatinho", "categoria": "Animais fofos", "preco": 12.0, "tamanho": "4 cm", "estoque": 8, "imagem": "", "emoji": "🐾", "descricao": "Modelo demonstrativo de patinha."},
+        {"id": 7, "nome": "Estrela colorida", "categoria": "Corações e frases", "preco": 10.0, "tamanho": "4 cm", "estoque": 8, "imagem": "", "emoji": "⭐", "descricao": "Modelo demonstrativo de estrela."},
+        {"id": 8, "nome": "Alien azul", "categoria": "Personagens fofos", "preco": 16.0, "tamanho": "6 cm", "estoque": 4, "imagem": "", "emoji": "👾", "descricao": "Personagem original demonstrativo; cores podem ser personalizadas."},
+        {"id": 9, "nome": "Borboleta lilás", "categoria": "Flores e natureza", "preco": 14.0, "tamanho": "5 cm", "estoque": 5, "imagem": "", "emoji": "🦋", "descricao": "Modelo demonstrativo de borboleta."},
+        {"id": 10, "nome": "Marcador de página floral", "categoria": "Marcadores de página", "preco": 18.0, "tamanho": "12 cm", "estoque": 5, "imagem": "", "emoji": "🌸", "descricao": "Marcador de página demonstrativo com tema floral."},
+        {"id": 11, "nome": "Marcador de página coração", "categoria": "Marcadores de página", "preco": 18.0, "tamanho": "12 cm", "estoque": 5, "imagem": "", "emoji": "💖", "descricao": "Marcador de página demonstrativo em formato de coração."},
+        {"id": 12, "nome": "Inicial personalizada", "categoria": "Personalizados", "preco": 17.0, "tamanho": "5 cm", "estoque": 6, "imagem": "", "emoji": "🔤", "descricao": "Exemplo de chaveiro com inicial; confirme a letra pelo WhatsApp."},
+        {"id": 13, "nome": "Nuvem sorridente", "categoria": "Personagens fofos", "preco": 12.0, "tamanho": "5 cm", "estoque": 7, "imagem": "", "emoji": "☁️", "descricao": "Modelo demonstrativo de nuvem sorridente."},
+        {"id": 14, "nome": "Controle gamer", "categoria": "Games e pixel art", "preco": 16.0, "tamanho": "6 cm", "estoque": 4, "imagem": "", "emoji": "🎮", "descricao": "Modelo demonstrativo para fãs de jogos."},
+        {"id": 15, "nome": "Abelhinha", "categoria": "Animais fofos", "preco": 13.0, "tamanho": "5 cm", "estoque": 5, "imagem": "", "emoji": "🐝", "descricao": "Modelo demonstrativo de abelhinha."},
+        {"id": 16, "nome": "Lua e estrelas", "categoria": "Corações e frases", "preco": 14.0, "tamanho": "5 cm", "estoque": 5, "imagem": "", "emoji": "🌙", "descricao": "Modelo demonstrativo de lua e estrelas."},
+        {"id": 17, "nome": "Melancia pixel", "categoria": "Frutas e comidas", "preco": 12.0, "tamanho": "5 cm", "estoque": 6, "imagem": "", "emoji": "🍉", "descricao": "Modelo demonstrativo de melancia em pixel art."},
+        {"id": 18, "nome": "Arco-íris pastel", "categoria": "Personalizados", "preco": 15.0, "tamanho": "5 cm", "estoque": 6, "imagem": "", "emoji": "🌈", "descricao": "Modelo demonstrativo em cores pastel."}
     ]
     salvar_produtos(data)
     return data
@@ -204,11 +222,13 @@ if pagina == "Início":
 
     st.markdown("<div class='section-label'>Escolha seu estilo</div>", unsafe_allow_html=True)
     cats = sorted(set(str(p.get("categoria", "Chaveiros")) for p in produtos))
+    cat_icons = {"Animais fofos":"🐱", "Corações e frases":"💗", "Flores e natureza":"🌻", "Frutas e comidas":"🍓", "Games e pixel art":"🎮", "Marcadores de página":"📚", "Personagens fofos":"🧸", "Personalizados":"✨"}
     cat_cols = st.columns(min(4, max(1, len(cats))))
-    for idx, cat in enumerate(cats[:4]):
-        with cat_cols[idx]:
-            if st.button("🌷 " + cat, key=f"cat_home_{idx}", use_container_width=True):
+    for idx, cat in enumerate(cats):
+        with cat_cols[idx % len(cat_cols)]:
+            if st.button(cat_icons.get(cat, "🌷") + " " + cat, key=f"cat_home_{idx}", use_container_width=True):
                 st.session_state.categoria_filtro = cat
+                st.session_state.pagina_catalogo = 1
                 navegar("Categorias")
                 st.rerun()
 
@@ -233,22 +253,31 @@ elif pagina == "Categorias":
     st.title("Encontre seu chaveiro 💕")
     a, b = st.columns([2, 1])
     with a:
-        busca = st.text_input("Buscar produtos", placeholder="Digite o nome do chaveiro...", key="busca_catalogo")
+        busca = st.text_input("Buscar produtos", placeholder="Busque chaveiros, flores, animais...", key="busca_catalogo")
     with b:
         categorias = ["Todas"] + sorted(set(str(p.get("categoria", "Chaveiros")) for p in produtos))
-        escolha = st.selectbox("Categoria", categorias, key="categoria_catalogo")
+        default_cat = st.session_state.get("categoria_filtro", "Todas")
+        default_index = categorias.index(default_cat) if default_cat in categorias else 0
+        escolha = st.selectbox("Tipo de produto", categorias, index=default_index, key="categoria_catalogo")
     filtrados = [p for p in produtos if busca.lower() in str(p.get("nome", "")).lower()]
     if escolha != "Todas":
         filtrados = [p for p in filtrados if p.get("categoria", "Chaveiros") == escolha]
+    st.caption(f"{len(filtrados)} modelos demonstrativos encontrados · fotos e preços podem ser alterados no cadastro.")
     if not filtrados:
         st.markdown("<div class='empty'>Não encontramos chaveiros com esse filtro. Tente outra busca. 🌸</div>", unsafe_allow_html=True)
     else:
+        por_pagina = 6
+        total_paginas = max(1, (len(filtrados) + por_pagina - 1) // por_pagina)
+        pagina_atual = min(max(1, int(st.session_state.get("pagina_catalogo", 1))), total_paginas)
+        inicio = (pagina_atual - 1) * por_pagina
+        produtos_pagina = filtrados[inicio:inicio + por_pagina]
         cols = st.columns(3)
-        for idx, prod in enumerate(filtrados):
+        for idx, prod in enumerate(produtos_pagina):
             with cols[idx % 3]:
                 with st.container(border=True):
                     if not mostrar_imagem(prod.get("imagem", "")):
-                        st.markdown("<div style='background:linear-gradient(145deg,#ffe4f2,#f1e4ff);border-radius:18px;padding:34px 8px;text-align:center;font-size:3rem'>🧸🌸</div>", unsafe_allow_html=True)
+                        emoji = escape(str(prod.get("emoji", "🌸")))
+                        st.markdown(f"<div style='background:linear-gradient(145deg,#ffe4f2,#f1e4ff);border-radius:18px;padding:24px 8px;text-align:center;font-size:3.2rem;min-height:120px;display:flex;align-items:center;justify-content:center'>{emoji}</div>", unsafe_allow_html=True)
                     st.markdown(f"<div class='tag'>{escape(str(prod.get('categoria','Chaveiros')))}</div><div class='product-title'>{escape(str(prod['nome']))}</div><div class='muted'>Tamanho aproximado: {escape(str(prod.get('tamanho','5 cm')))}</div><div class='price'>R$ {float(prod.get('preco',0)):.2f}</div>", unsafe_allow_html=True)
                     if int(prod.get("estoque", 0)) > 0:
                         c1, c2 = st.columns(2)
@@ -270,6 +299,26 @@ elif pagina == "Categorias":
                             st.rerun()
                     else:
                         st.button("Esgotado", key=f"out_{prod['id']}", disabled=True, use_container_width=True)
+        if total_paginas > 1:
+            st.markdown("---")
+            prev, info, nxt = st.columns([1, 2, 1], vertical_alignment="center")
+            with prev:
+                if st.button("← Anterior", disabled=pagina_atual <= 1, use_container_width=True, key="catalog_prev"):
+                    st.session_state.pagina_catalogo = pagina_atual - 1
+                    st.rerun()
+            with info:
+                st.markdown(f"<div style='text-align:center;color:#7a39a6;font-weight:800;padding:.6rem'>Página {pagina_atual} de {total_paginas}</div>", unsafe_allow_html=True)
+                page_cols = st.columns(min(total_paginas, 5))
+                for page_idx in range(min(total_paginas, 5)):
+                    page_num = page_idx + 1
+                    with page_cols[page_idx]:
+                        if st.button(str(page_num), key=f"catalog_page_{page_num}", type="primary" if page_num == pagina_atual else "secondary", use_container_width=True):
+                            st.session_state.pagina_catalogo = page_num
+                            st.rerun()
+            with nxt:
+                if st.button("Próxima →", disabled=pagina_atual >= total_paginas, use_container_width=True, key="catalog_next"):
+                    st.session_state.pagina_catalogo = pagina_atual + 1
+                    st.rerun()
 
 elif pagina == "Detalhes":
     prod = next((p for p in produtos if p["id"] == st.session_state.produto_selecionado), None)
