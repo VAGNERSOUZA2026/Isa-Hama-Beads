@@ -3,8 +3,6 @@ import json
 import os
 import base64
 import urllib.parse
-import qrcode
-from io import BytesIO
 from html import escape
 
 st.set_page_config(page_title="Isa Hama Beads | Chaveiros artesanais", page_icon="🌸", layout="wide")
@@ -16,38 +14,44 @@ LOGO_FILE = "logo.png"
 # Paleta moderna inspirada em Hama Beads
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
-:root { --pink:#e84d9b; --purple:#7545a8; --ink:#30243a; --cream:#fff8fc; }
-.stApp { background: linear-gradient(180deg,#fff8fc 0%,#fff 42%,#fff8fc 100%); color:var(--ink); }
-.block-container { max-width: 1180px; padding-top: 1.4rem; }
-h1,h2,h3 { color:#4b285f; font-family:'Playfair Display',serif; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+:root { --pink:#f04b9b; --pink-dark:#c82e7d; --purple:#7545a8; --purple-dark:#4b285f; --ink:#30243a; --cream:#fff8fc; --line:#f3d6e8; }
+.stApp { background: radial-gradient(ellipse at 8% 0%,#ffe5f3 0,transparent 34%), radial-gradient(ellipse at 100% 12%,#eee2ff 0,transparent 30%), linear-gradient(180deg,#fffafd 0%,#fff 55%,#fff8fc 100%); color:var(--ink); }
+.block-container { max-width: 1220px; padding-top: 1.6rem; padding-bottom: 3rem; }
+h1,h2,h3 { color:var(--purple-dark); font-family:'Playfair Display',serif; letter-spacing:-.02em; }
+h2 { margin-top:1.4rem; }
 p,div,label { font-family:'DM Sans',sans-serif; }
-.stButton>button, .stFormSubmitButton>button {
-  border:0; border-radius:14px; padding:.68rem 1rem; font-weight:700;
-  color:white; background:linear-gradient(115deg,#e84d9b,#8750bb);
-  box-shadow:0 7px 18px #d85b9b26; transition:transform .2s, box-shadow .2s;
+[data-testid="stHeader"] { background:rgba(255,250,253,.88); }
+.stButton>button, .stFormSubmitButton>button, .stLinkButton> a {
+  border:0; border-radius:14px; padding:.72rem 1rem; font-weight:800;
+  color:white; background:linear-gradient(115deg,var(--pink),#a34ed0);
+  box-shadow:0 8px 20px #d85b9b2b; transition:transform .18s, box-shadow .18s;
 }
-.stButton>button:hover,.stFormSubmitButton>button:hover { color:white; transform:translateY(-2px); box-shadow:0 10px 24px #d85b9b3d; }
+.stButton>button:hover,.stFormSubmitButton>button:hover,.stLinkButton> a:hover { color:white; transform:translateY(-2px); box-shadow:0 12px 26px #d85b9b42; }
+.stTextInput input,.stTextArea textarea,.stNumberInput input,.stSelectbox div[data-baseweb="select"] { border-radius:12px; border-color:#e9c7df; }
 div[data-testid="stMetric"], div[data-testid="stVerticalBlockBorderWrapper"] {
-  border:1px solid #f5d8e9; border-radius:18px; background:#fff; padding:12px;
+  border:1px solid var(--line); border-radius:20px; background:rgba(255,255,255,.92); padding:14px;
+  box-shadow:0 8px 26px #4b285f08;
 }
 .hero {
-  position:relative; overflow:hidden; border-radius:28px; padding:28px 30px;
-  background:linear-gradient(125deg,#fff0f8 0%,#f4eaff 50%,#fff8e9 100%);
-  border:1px solid #f4d9ea; box-shadow:0 15px 45px #6d3a7c12; margin-bottom:22px;
+  position:relative; overflow:hidden; border-radius:30px; padding:clamp(24px,4vw,40px);
+  background:linear-gradient(130deg,#fff0f8 0%,#f0e5ff 55%,#fff5e8 100%);
+  border:1px solid #f4d2e6; box-shadow:0 18px 50px #6d3a7c16; margin-bottom:22px;
 }
-.hero:after { content:""; position:absolute; width:220px;height:220px;border-radius:50%;
-  right:-55px;top:-75px;background:radial-gradient(circle,#e84d9b30,transparent 68%); }
-.hero-title { font-family:'Playfair Display',serif; color:#4b285f; font-size:clamp(2rem,4vw,3.2rem); line-height:1.08; margin:.4rem 0; }
-.hero-sub { color:#6d5b76; font-size:1.04rem; max-width:620px; }
-.pill { display:inline-block; padding:6px 12px; border-radius:999px; background:#fff; color:#a52d77; font-weight:700; font-size:.8rem; border:1px solid #f2cce1; }
-.product-card { border:1px solid #f1dce9; border-radius:20px; background:white; padding:14px; box-shadow:0 8px 22px #4b285f0a; }
-.price { color:#9b2f7b; font-size:1.25rem; font-weight:800; }
-.small-muted { color:#82738a; font-size:.88rem; }
-@keyframes floatLogo { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-8px) rotate(1deg)} }
-.floating-logo { animation:floatLogo 4s ease-in-out infinite; }
+.hero:after { content:""; position:absolute; width:250px;height:250px;border-radius:50%;
+  right:-80px;top:-90px;background:radial-gradient(circle,#e84d9b30,transparent 68%); pointer-events:none; }
+.hero-title { font-family:'Playfair Display',serif; color:var(--purple-dark); font-size:clamp(2rem,4vw,3.2rem); line-height:1.08; margin:.5rem 0; }
+.hero-sub { color:#6d5b76; font-size:1.04rem; max-width:620px; line-height:1.7; }
+.pill { display:inline-block; padding:7px 13px; border-radius:999px; background:#fff; color:var(--pink-dark); font-weight:800; font-size:.8rem; border:1px solid #f2cce1; }
+.product-card { border:1px solid var(--line); border-radius:22px; background:white; padding:16px; box-shadow:0 10px 28px #4b285f0d; }
+.price { color:var(--pink-dark); font-size:1.3rem; font-weight:800; }
+.small-muted { color:#82738a; font-size:.9rem; }
+div[data-testid="stImage"] img { border-radius:16px; }
+div[data-testid="stExpander"] { border:1px solid var(--line); border-radius:18px; background:#fffafd; }
+div[data-testid="stForm"] { border:1px solid #f1d8e8; border-radius:18px; padding:18px; background:#fff; }
 @keyframes shimmer { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
 .animated-strip { height:5px;border-radius:20px;background:linear-gradient(90deg,#e84d9b,#8e58bd,#f5b7d8,#e84d9b);background-size:200% 100%;animation:shimmer 5s linear infinite;margin:10px 0 22px; }
+@media (max-width: 700px) { .block-container { padding-left:1rem; padding-right:1rem; } .hero { padding:22px; border-radius:22px; } }
 footer { visibility:hidden; }
 </style>
 """, unsafe_allow_html=True)
@@ -144,38 +148,6 @@ with st.expander("✨ Personalizar meu chaveiro", expanded=False):
 
 st.markdown("---")
 
-# Funções para gerar QR Pix copia e cola com valor do pedido
-def pix_crc16(payload):
-    crc = 0xFFFF
-    for byte in payload.encode("utf-8"):
-        crc ^= byte << 8
-        for _ in range(8):
-            crc = ((crc << 1) ^ 0x1021) & 0xFFFF if crc & 0x8000 else (crc << 1) & 0xFFFF
-    return f"{crc:04X}"
-
-def pix_field(tag, value):
-    value = str(value)
-    return f"{tag}{len(value):02d}{value}"
-
-def montar_pix(chave, recebedor, cidade, valor, txid="ISA HAMA"):
-    chave = chave.strip()
-    recebedor = recebedor.strip().upper()[:25]
-    cidade = cidade.strip().upper()[:15]
-    merchant_account = pix_field("00", "br.gov.bcb.pix") + pix_field("01", chave)
-    payload = (
-        pix_field("00", "01") +
-        pix_field("26", merchant_account) +
-        pix_field("52", "0000") +
-        pix_field("53", "986") +
-        pix_field("54", f"{valor:.2f}") +
-        pix_field("58", "BR") +
-        pix_field("59", recebedor) +
-        pix_field("60", cidade) +
-        pix_field("62", pix_field("05", txid[:25])) +
-        "6304"
-    )
-    return payload + pix_crc16(payload)
-
 # Sacolinha / pedido sem login, e-mail ou checkout Mercado Pago
 st.markdown("## 🛍️ Sua sacolinha")
 st.session_state.ver_carrinho = st.toggle("Mostrar carrinho", value=st.session_state.ver_carrinho)
@@ -227,24 +199,8 @@ if st.session_state.ver_carrinho:
                 st.success("Pedido preenchido. Confira os dados e envie pelo WhatsApp.")
                 st.link_button("Enviar pedido pelo WhatsApp", f"https://wa.me/{PHONE_WA}?text={urllib.parse.quote(mensagem)}", use_container_width=True)
 
-        st.markdown("### 💠 Pagamento via Pix")
-        st.caption("O QR Code será exibido quando a chave Pix e os dados do recebedor forem configurados pela loja. Confira o valor e o nome do recebedor no aplicativo do seu banco antes de pagar.")
-        pix_key = st.secrets.get("PIX_KEY", "")
-        pix_name = st.secrets.get("PIX_MERCHANT_NAME", "")
-        pix_city = st.secrets.get("PIX_MERCHANT_CITY", "")
-        if pix_key and pix_name and pix_city:
-            pix_payload = montar_pix(pix_key, pix_name, pix_city, total_pedido)
-            qr = qrcode.QRCode(box_size=7, border=3)
-            qr.add_data(pix_payload)
-            qr.make(fit=True)
-            qr_image = qr.make_image(fill_color="black", back_color="white")
-            qr_buffer = BytesIO()
-            qr_image.save(qr_buffer, format="PNG")
-            st.image(qr_buffer.getvalue(), caption=f"Pix Isa Hama Beads — R$ {total_pedido:.2f}", width=240)
-            st.code(pix_payload, language=None)
-            st.caption("Este QR contém o valor dos produtos; o frete, se houver, será combinado separadamente.")
-        else:
-            st.info("Configuração pendente: adicione PIX_KEY, PIX_MERCHANT_NAME e PIX_MERCHANT_CITY em Settings → Secrets no Streamlit.")
+        st.info("Após enviar o pedido pelo WhatsApp, a loja combinará a forma de pagamento diretamente com você.")
+
 st.markdown("---")
 st.markdown("## 🎨 Catálogo de chaveiros")
 f1, f2 = st.columns([2, 1])
