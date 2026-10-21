@@ -135,9 +135,9 @@ with st.expander("✨ Personalizar meu chaveiro", expanded=False):
         obs_modelo = st.text_area("Detalhes do modelo", placeholder="Texto, acabamento ou outras preferências")
         enviar_orcamento = st.form_submit_button("📲 Pedir orçamento pelo WhatsApp", use_container_width=True)
     if enviar_orcamento:
-        mensagem = ("Olá! Gostaria de um orçamento para chaveiro personalizado:\\n"
-                    f"Nome/personagem: {nome_personagem or 'A combinar'}\\nTamanho: {tamanho_opc}\\nQuantidade: {qtd_pers}\\n"
-                    f"Cores: {cores_desejadas or 'A combinar'}\\nObservações: {obs_modelo or 'Nenhuma'}\\n"
+        mensagem = ("Olá! Gostaria de um orçamento para chaveiro personalizado:\n"
+                    f"Nome/personagem: {nome_personagem or 'A combinar'}\nTamanho: {tamanho_opc}\nQuantidade: {qtd_pers}\n"
+                    f"Cores: {cores_desejadas or 'A combinar'}\nObservações: {obs_modelo or 'Nenhuma'}\n"
                     + ("Tenho uma imagem de referência e vou anexá-la nesta conversa." if foto_ref else "Ainda não tenho imagem de referência."))
         st.success("Abra o WhatsApp e envie a mensagem. Se tiver uma foto, anexe-a na conversa.")
         st.link_button("Abrir WhatsApp", f"https://wa.me/{PHONE_WA}?text={urllib.parse.quote(mensagem)}", use_container_width=True)
@@ -214,15 +214,15 @@ if st.session_state.ver_carrinho:
             elif entrega == "Receber por envio" and not endereco.strip():
                 st.error("Informe o CEP/cidade ou endereço para combinar o envio.")
             else:
-                mensagem = "Olá! Quero fazer este pedido na Isa Hama Beads:\\n"
+                mensagem = "Olá! Quero fazer este pedido na Isa Hama Beads:\n"
                 for item in st.session_state.carrinho:
-                    mensagem += f"- {item['qtd']}x {item['nome']} ({item['tamanho']}) — R$ {float(item['preco'])*int(item['qtd']):.2f}\\n"
-                mensagem += f"Total dos produtos: R$ {total_pedido:.2f}\\n"
-                mensagem += f"Cliente: {nome_cliente.strip()}\\nTelefone: {telefone_cliente.strip()}\\nEntrega: {entrega}\\n"
+                    mensagem += f"- {item['qtd']}x {item['nome']} ({item['tamanho']}) — R$ {float(item['preco'])*int(item['qtd']):.2f}\n"
+                mensagem += f"Total dos produtos: R$ {total_pedido:.2f}\n"
+                mensagem += f"Cliente: {nome_cliente.strip()}\nTelefone: {telefone_cliente.strip()}\nEntrega: {entrega}\n"
                 if endereco:
-                    mensagem += f"Endereço/CEP: {endereco.strip()}\\n"
+                    mensagem += f"Endereço/CEP: {endereco.strip()}\n"
                 if observacoes_pedido.strip():
-                    mensagem += f"Observações: {observacoes_pedido.strip()}\\n"
+                    mensagem += f"Observações: {observacoes_pedido.strip()}\n"
                 st.session_state.mensagem_pedido_whatsapp = mensagem
                 st.success("Pedido preenchido. Confira os dados e envie pelo WhatsApp.")
                 st.link_button("Enviar pedido pelo WhatsApp", f"https://wa.me/{PHONE_WA}?text={urllib.parse.quote(mensagem)}", use_container_width=True)
